@@ -1,0 +1,5 @@
+print('=' * 50)
+print('hello world')
+print('从今天开始，从零学Python')
+print('每天坚持一点点，每天进步一点点，加油')
+print('=' * 50)
