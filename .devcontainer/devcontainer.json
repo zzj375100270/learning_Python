@@ -1,0 +1,17 @@
+{
+  "name": "Python 3.14 Data Science",
+  "image": "mcr.microsoft.com/devcontainers/python:3.14-bookworm", // 使用 Python 3.14 基础镜像
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {}, // 确保Python特性已安装
+    "ghcr.io/devcontainers-contrib/features/ipykernel:2": {} // 安装 Jupyter ipykernel
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [ // 预安装的 VS Code 扩展
+        "ms-python.python",
+        "ms-toolsai.jupyter"
+      ]
+    }
+  },
+  "postCreateCommand": "python --version && python -m ipykernel install --user --name 'python314' --display-name 'Python 3.14'" // 容器创建后自动注册内核
+}
