@@ -47,6 +47,97 @@ def is_bomb(cards):
         return False
 
 
+# 4 张牌的情况：三带一
+def is_three_one(cards):
+    for each in cards:
+        if cards.count(each) == 3:
+            return True
+    else:
+        return False
+
+
+# 5 张牌的情况：三带二
+def is_three_two(cards):
+    for each in cards:
+        if cards.count(each) == 3 and len(set(cards)) == 2:
+            return True
+    else:
+        return False
+
+
+# 6 张牌的情况：四带二
+def is_four_two(cards):
+    # 四带二分为带一对和带两张单牌
+    for each in cards:
+        if cards.count(each) == 4 and (len(set(cards)) == 2 or len(set(cards)) == 3):
+            return True
+    else:
+        return False
+
+
+# 5+ 张牌的情况：顺子
+def is_continue(cards):
+    # 注意：'2'和大小王不能参与
+    length = len(cards)
+    if 13 in cards or 14 in cards or 15 in cards or len(set(cards)) != length:
+        return False
+    else:
+        for i in range(length-1):
+            if cards[i] + 1 != cards[i+1]:
+                return False
+        else:
+            return True
+
+
+# 6+ 张牌的情况（必须为偶数）：双顺
+def is_con_pair(cards):
+    # 注意：'2'和大小王不能参与
+    # 先判断是否两两成对，比如334455
+    length = len(cards)
+    cards.sort()
+    for i in range(0, length-1, 2):
+        if cards[i] != cards[i+1]:
+            return False
+    else:
+        # 如果两两成对，去重后检测是否为顺子
+        return is_continue(cards[::2])
+
+
+# 6+ 张牌的情况（必须为三的倍数）：三顺
+def is_aircraft(cards):
+    # 注意：'2'和大小王不能参与
+    # 先判断是否每三张牌均相同，比如333444
+    length = len(cards)
+    cards.sort()
+    for i in range(0, length-2, 3):
+        if (cards[i] != cards[i+1]) or (cards[i] != cards[i+2]) or (cards[i+1] != cards[i+2]):
+            return False
+    else:
+        # 如果每三张牌均相同，去重后检测是否为顺子
+        return is_continue(cards[::3])
+
+
+# 8+ 张牌的情况：飞机带翅膀
+def is_aircraft_wing(cards):
+    # 注意：'2'和大小王不能参与
+    # 先将飞机放到t1中
+    # 再将翅膀放到t2中
+    t1 = []
+    t2 = []
+    for each in cards:
+        if cards.count(each) == 3:
+            t1.append(each)
+        else:
+            t2.append(each)
+
+    # 先判断飞机是否合法
+    # 再判断剩余的牌是否与飞机配对
+    if is_aircraft(t1) and len(t1) / 3 == len(set(t2)):
+        return True
+    else:
+        return False
+
+
 # 获取用户输入的扑克牌
 def get_input():
     cards = input("请出牌（空格间隔，退出请输入Q）：")
@@ -93,8 +184,45 @@ def check(cards):
     elif len(cards) == 4:
         if is_bomb(cards):
             print("符合规则：炸弹")
+        elif is_three_one(cards):
+            print("符合规则：三带一")
         else:
             print("不符合规则！")
+
+    # 检查5+张牌的情况
+    elif len(cards) >= 5:
+        # 大于等于5张牌先检查是不是单顺，不是再检查其他情况
+        if is_continue(cards):
+            print("符合规则：单顺")
+        else:
+            # 检查5张牌的情况
+            if len(cards) == 5:
+                if is_three_two(cards):
+                    print("符合规则：三带二")
+                else:
+                    print("不符合规则！")
+
+            # 检查6张牌的情况
+            if len(cards) == 6:
+                if is_four_two(cards):
+                    print("符合规则：四带二")
+                elif is_con_pair(cards):
+                    print("符合规则：双顺")
+                elif is_aircraft(cards):
+                    print("符合规则：三顺（飞机）")
+                else:
+                    print("不符合规则！")
+
+            # 检查8+张牌的情况
+            if len(cards) >= 8:
+                if is_aircraft_wing(cards):
+                    print("符合规则：飞机带翅膀")
+                elif is_con_pair(cards):
+                    print("符合规则：双顺")
+                elif is_aircraft(cards):
+                    print("符合规则：三顺（飞机）")
+                else:
+                    print("不符合规则！")
 
 
 # 程序主流程
